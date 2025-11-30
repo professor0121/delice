@@ -43,6 +43,10 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra":{
+      "auth0Domain":"dev-uk6vns8t7hl250s7.us.auth0.com",
+      "auth0ClientId":"UmCc4di09xVaLZaGNw291M7DovDG2gmg"
     }
   }
 }
