@@ -1,11 +1,19 @@
 {
   "name": "delice-server",
   "version": "1.0.0",
+  "type": "module",
   "description": "delice have a backend server to manage the app globaly",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node --watch index.js",
+    "dev": "nodemon index.js"
   },
   "author": "abhishek kushwaha",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.0"
+  }
 }
