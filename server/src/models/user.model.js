@@ -46,7 +46,15 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["Personal","Business","Admin"],
         default:"Personal"
-    }
+    },
+    isActivatedBusinessAccount:{
+        type:Boolean,
+        default:false
+    },
+    mobileNumber:{
+        type:String,
+        required:false
+    },
 
 }, {timestamps:true});
     
