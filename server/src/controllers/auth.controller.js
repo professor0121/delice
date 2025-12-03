@@ -1,33 +1,137 @@
-import generateOtp from "../utils/generateOtp.js";
-import { storeOtp, verifyOtp } from "../services/otp.service.js";
-import { sendEmailOtp } from "../services/email.service.js";
-import { ApiError } from "../utils/apiError.js";
 
-export const sendOtp = async (req, res, next) => {
-  try {
-    const { email } = req.body;
+// import { ApiError } from "../utils/apiErrors.js";
 
-    const otp = generateOtp();
+import { registerService, loginService,loginWithOtpService ,forgotPasswordService,resetPasswordService} from "../services/auth.service.js";
+import { ApiError } from "../utils/apiErrors.js";
 
-    await storeOtp(email, otp);
-    await sendEmailOtp(email, otp);
+export const registerUser = async (req, res, next) => {
+    try {
+        const { firstName, lastName, email, password, userName, accountType } = req.body;
 
-    return res.json({ success: true, message: "OTP sent to email" });
-  } catch (err) {
-    next(err);
-  }
+        if (!firstName || !email || !password || !userName || !accountType) {
+            throw new ApiError(400, "All fields are required");
+        }
+
+        const user = await registerService({
+            firstName,
+            lastName,
+            email,
+            password,
+            userName,
+            accountType
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user: {
+                id: user._id,
+                fullName: user.firstName + " " + user.lastName,
+                email: user.email,
+                userName: user.userName,
+                accountType: user.accountType,
+            },
+        });
+    } catch (err) {
+        next(err);
+    }
 };
 
-export const verifyEmailOtp = async (req, res, next) => {
-  try {
-    const { email, otp } = req.body;
 
-    const valid = await verifyOtp(email, otp);
-    if (!valid) throw new ApiError(400, "Invalid OTP");
+export const loginUser = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        console.log("Login Request Body:", req.body);
+        if (!email || !password) {
+            throw new ApiError(400, "Email and password are required");
+        }
 
-    return res.json({ success: true, message: "OTP verified" });
-  } catch (err) {
-    next(err);
-  }
+        const { userEmail, message } = await loginService(email, password);
+        console.log("Login Service Response:", { userEmail, message });
+        res.status(200).json({
+            success: true,
+            message,
+            email: userEmail
+        });
+    } catch (err) {
+        next(err);
+    }
 };
-// This controller handles sending and verifying OTPs for email authentication. 
+
+
+export const loginWithOtp = async (req, res, next) => {
+    try {
+        const { email, otp } = req.body;
+        if (!email || !otp) {
+            throw new ApiError(400, "Email and OTP are required");
+        }
+        console.log("Verifying OTP for email:", email);
+        const { user, token } = await loginWithOtpService(email, otp);
+        res.status(200).json({
+            success: true,
+            message: "Login with OTP successful",
+            user,
+            token
+        }); 
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+export const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            throw new ApiError(400, "Email is required");
+        }
+
+        const { message,userEmail } = await forgotPasswordService(email);
+
+        res.status(200).json({
+            success: true,
+            message,
+            email:userEmail
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const forgotPasswordWithOtp = async (req, res, next) => {
+    try {
+        const { email, otp} = req.body;
+        if (!email || !otp) {
+            throw new ApiError(400, "Email and OTP are required");
+        }
+        console.log("Verifying OTP for password reset for email:", email);
+
+        const { user, token } = await loginWithOtpService(email, otp);
+
+        res.status(200).json({
+            success: true,
+            message: "OTP verified successfully for password reset",
+            user,
+            token
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { email, newPassword } = req.body;
+        if (!email || !newPassword) {
+            throw new ApiError(400, "Email and new password are required");
+        }
+        const {message} = await resetPasswordService(email, newPassword);
+
+        res.status(200).json({
+            success: true,
+            message,
+        });
+    } catch (err) {
+        next(err);
+    }
+};

@@ -19,3 +19,11 @@ export const EMAIL_PASS = process.env.EMAIL_PASS ;
 
 
 export const APP_EMAIL = process.env.APP_EMAIL ;
+
+export const JWT_SECRET = process.env.JWT_SECRET ;
+export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ;
+
+
+export const NODEMAILER_EMAIL = process.env.NODEMAILER_EMAIL ;
+export const NODEMAILER_PASS = process.env.NODEMAILER_PASS ;
+export const NODEMAILER_APP_NAME = process.env.NODEMAILER_APP_NAME ;
