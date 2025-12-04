@@ -24,7 +24,7 @@ const loginUser = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       email: "abhishekkushwahaak0121@gmail.com",
-      password: "123456"
+      password: "newpassword123"
     })
   });
 
@@ -52,7 +52,7 @@ const loginWithOtp = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             email: "abhishekkushwahaak0121@gmail.com",
-            otp: "910725" // Replace with the actual OTP received via email
+            otp: "623314" // Replace with the actual OTP received via email
         })
     });
     console.log("STATUS:", res.status);
@@ -60,7 +60,7 @@ const loginWithOtp = async () => {
     console.log("Response:", data);
 };
 
-// loginWithOtp();
+loginWithOtp();
 
 
 const forgotPassword = async () => {
@@ -107,4 +107,4 @@ const resetPassword = async () => {
     console.log("Response:", data);
 };
 
-resetPassword();
+// resetPassword();

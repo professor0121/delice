@@ -7,10 +7,18 @@ declare global {
 }
 
 interface User {
-  id?: string;
-  name?: string;
+  _id: string;
+  firstName: string;
+  lastName: string;
   email: string;
+  profileImage?: string;
+  userName: string;
+  followers: string[];
+  following: string[];
+  accountType: string;
+  isActivatedBusinessAccount: boolean;
 }
+
     
 interface AuthState {
   user: User | null;
@@ -102,10 +110,12 @@ const authSlice = createSlice({
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
       })
-      .addCase(loginUser.fulfilled, (state) => {
-        state.loading = false;
-        state.otpSent = true;
+      .addCase(loginUser.fulfilled, (state, action) => {
+      state.loading = false;
+      state.otpSent = true;
+      state.user = action.payload.user; // FIX HERE
       })
+
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;

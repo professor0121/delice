@@ -8,6 +8,7 @@ const router = express.Router();
 
 
 router.post('/login',loginUser);
+// router.post('/user-profile',userProfile);
 router.post('/verify-login-otp',loginWithOtp);
 router.post('/register',registerUser);
 

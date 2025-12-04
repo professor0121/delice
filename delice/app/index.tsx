@@ -67,5 +67,5 @@ export default function Index() {
   }
 
   // User is authenticated
-  return <Redirect href="/(tabs)/home" />;
+  return <Redirect href="/(tabs)" />;
 }
