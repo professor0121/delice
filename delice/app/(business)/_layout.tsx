@@ -1,26 +1,8 @@
 import { Tabs } from "expo-router";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useColorScheme } from "@/hooks/use-color-scheme";
-import { useAppSelector } from "@/redux/hooks";
-import { useState, useEffect } from "react";
-import { View, Text } from "react-native";
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const user = useAppSelector((state) => state.auth.user);
-  const [isBusinessAccount, setIsBusinessAccount] = useState(false);
-
-  useEffect(() => {
-    if (user?.accountType === "Business") {
-      setIsBusinessAccount(true);
-    }
-  }, [user]);
-
-
-  // ------------------------------
-  // NORMAL ACCOUNT TABS
-  // ------------------------------
+export default function BusinessLayout() {
   return (
     <Tabs
       screenOptions={{
@@ -35,7 +17,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
@@ -43,7 +25,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
         name="search"
         options={{
@@ -53,17 +34,24 @@ export default function TabLayout() {
           ),
         }}
       />
-
       <Tabs.Screen
-        name="reels"
+        name="upload"
         options={{
-          title: "Reels",
+          title: "Reel",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="film.fill" color={color} />
+            <IconSymbol size={28} name="camera.fill" color={color} />
           ),
         }}
       />
-
+      <Tabs.Screen
+        name="products"
+        options={{
+          title: "Product",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="photo.on.rectangle" color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="profile"
         options={{

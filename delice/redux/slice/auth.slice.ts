@@ -73,7 +73,7 @@ export const verifyOtp = createAsyncThunk(
       const res = await api.post("/auth/verify-login-otp", data);
       global.authToken = res.data.token; // store token globally
       await AsyncStorage.setItem('authToken', res.data.token); // store token in AsyncStorage
-        console.log("OTP Verify Response:", res.data.token);
+        // console.log("OTP Verify Response:", res.data.token);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "OTP Verify Failed");
@@ -113,7 +113,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
       state.otpSent = true;
-      state.user = action.payload.user; // FIX HERE
+      // state.user = action.payload.user; // FIX HERE
       })
 
       .addCase(loginUser.rejected, (state, action) => {

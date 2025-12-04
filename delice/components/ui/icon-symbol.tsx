@@ -30,6 +30,7 @@ const MAPPING = {
   'photo.on.rectangle': 'photo',
   'camera.fill': 'photo-camera',
   'map.fill': 'map',
+  'film.fill': 'slideshow',
 } as IconMapping;
 
 

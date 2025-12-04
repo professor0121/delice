@@ -8,7 +8,7 @@ const profile = () => {
   return (
     <SafeAreaView>
       <View>
-        <Text>Profile Screen</Text>
+        <Text>Profile Screen{user?.accountType}</Text>
         <LogOut style={{ padding: 10, backgroundColor: "red" }} />
       </View>
     </SafeAreaView>
