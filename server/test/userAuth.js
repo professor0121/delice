@@ -5,10 +5,10 @@ const registerUser = async () => {
     body: JSON.stringify({
       firstName: "Abhi",
       lastName: "Kush",
-      email: "abhishekkushwahaak0121@gmail.com",
+      email: "musicsoft790@gmail.com",
       password: "123456",
-      userName: "professor00700",
-      accountType: "Personal"
+      userName: "softmusic",
+      accountType: "Admin"
     })
   });
 
@@ -16,7 +16,7 @@ const registerUser = async () => {
   console.log("Response:", data);
 };
 
-// registerUser();
+registerUser();
 
 const loginUser = async () => {
   const res = await fetch("http://localhost:3000/api/auth/login", {
@@ -60,7 +60,7 @@ const loginWithOtp = async () => {
     console.log("Response:", data);
 };
 
-loginWithOtp();
+// loginWithOtp();
 
 
 const forgotPassword = async () => {
