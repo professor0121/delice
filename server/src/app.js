@@ -4,6 +4,8 @@ import authRoutes from './routes/auth.routes.js';
 import { connectRedis } from './config/redis.config.js';
 import { globalErrorHandler } from "./utils/globalErrorHandler.util.js";
 import cors from 'cors'
+import businessRoutes from './routes/business.routes.js'
+import userRoutes from "./routes/user.routes.js"
 
 await connectRedis();
 connectDB();
@@ -25,8 +27,8 @@ app.use(globalErrorHandler);
 
 app.use('/api/auth', authRoutes);
 
-
-// app.use('/api/users');
+app.use('/api/business',businessRoutes)
+app.use('/api/users',userRoutes);
 // app.use('/api/products');
 // app.use('/api/orders');
 // app.use('/api/reels');

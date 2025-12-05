@@ -24,3 +24,35 @@ export const updateUserPassword = async (email, newHashedPassword) => {
     { new: true }
   );
 };
+
+export const updateUserByEmail = (email, data) => {
+  return User.findOneAndUpdate({ email }, data, { new: true });
+};
+
+export const getAllUsersDAO = () => {
+  return User.find().select("-password");
+};
+
+export const getUsersByAccountTypeDAO = (type) => {
+  return User.find({ accountType: type }).select("-password");
+};
+
+export const getBusinessRequestedUsersDAO = () => {
+  return User.find({
+    accountType: "Business",
+    isActivatedBusinessAccount: "Requested"
+  }).select("-password");
+};
+
+export const getAdvancedUsersDAO = (query, options) => {
+  return User.find(query)
+    .select("-password")
+    .skip(options.skip)
+    .limit(options.limit)
+    .sort(options.sort);
+};
+
+
+export const softDeleteUserByEmailDAO = (email) => {
+  return User.findOneAndUpdate({ email }, { isDeleted: true }, { new: true });
+};
