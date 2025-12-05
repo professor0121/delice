@@ -112,7 +112,7 @@ export const activateBusinessAccount = createAsyncThunk<
   { rejectValue: string }
 >("users/activateBusiness", async (email, thunkAPI) => {
   try {
-    const res = await api.post(`/admin/activate-business/${email}`);
+    const res = await api.post(`/business/activate-business`,{email});
     return res.data.user;
   } catch (error: any) {
     return thunkAPI.rejectWithValue(

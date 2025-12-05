@@ -7,9 +7,9 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isBusinessAccount,setIsBusinessAccount]=useState(false);
   
   const user=useAppSelector((state)=> state.auth.user)
-  const accountType=user?.accountType;
 
   useEffect(() => {
     const check = async () => {
@@ -19,9 +19,14 @@ export default function Index() {
 
       // Check if user is authenticated
       const token = await AsyncStorage.getItem("authToken");
+      setIsAuthenticated(!!token);
+      
+      const storedAccountType = await AsyncStorage.getItem("accountType");
+      if (storedAccountType === "Business") {
+        setIsBusinessAccount(true);
+      }
 
       // console.log("Auth Token:", token);
-      setIsAuthenticated(!!token);
       setIsLoading(false);
     };
 
@@ -38,9 +43,10 @@ export default function Index() {
     return <Redirect href="/(auth)/login" />;
   }
 
-  if(accountType==="Business"){
+  if(isBusinessAccount){
     return <Redirect href="/(business)/home"/>
   }
-  // User is authenticated
+
   return <Redirect href="/(tabs)" />;
+  // User is authenticated
 }

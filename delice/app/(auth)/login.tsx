@@ -6,6 +6,8 @@ import { loginUser, verifyOtp } from "@/redux/slice/auth.slice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { router } from "expo-router";
 import Loader from "@/components/Loader";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const LoginScreen: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +23,7 @@ const LoginScreen: React.FC = () => {
 
   const handleVerifyOtp = () => {
     dispatch(verifyOtp({ email, otp }));
+     AsyncStorage.setItem('accountType',user?.accountType as string)
   };
 
   // 👀 Watch for user update to redirect properly

@@ -11,7 +11,7 @@ router.post('/business-activation-request',
 );
 router.post('/activate-business',
     userAuthMiddleware,
-    roleAuthMiddleware,
+    roleAuthMiddleware("Admin"),
     activateBusinessAdmin
 );
 

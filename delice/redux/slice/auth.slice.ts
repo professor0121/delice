@@ -16,7 +16,7 @@ interface User {
   followers: string[];
   following: string[];
   accountType: string;
-  isActivatedBusinessAccount: boolean;
+  isActivatedBusinessAccount: string;
 }
 
     
