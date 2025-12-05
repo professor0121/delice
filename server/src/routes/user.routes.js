@@ -29,7 +29,7 @@ router.post(
 );
 
 // GET all users who requested business activation
-router.post(
+router.get(
   "/get-business-requested-user",
   userAuthMiddleware,
   roleAuthMiddleware("Admin"),

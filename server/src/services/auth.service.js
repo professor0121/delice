@@ -71,3 +71,12 @@ export const resetPasswordService= async(email,newPassword)=>{
     await updateUserPassword(email, hashedPassword);
     return { message: "Password reset successful" };
 };
+
+export const getUserProfileService = async (email)=> {
+  const user = await userDao.findUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+    const token= generateToken({ id: user._id, email: user.email });
+  return {user,token};
+};

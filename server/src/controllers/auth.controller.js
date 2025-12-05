@@ -1,7 +1,7 @@
 
 // import { ApiError } from "../utils/apiErrors.js";
 
-import { registerService, loginService,loginWithOtpService ,forgotPasswordService,resetPasswordService} from "../services/auth.service.js";
+import { registerService, loginService,loginWithOtpService ,forgotPasswordService,resetPasswordService,getUserProfileService} from "../services/auth.service.js";
 import { ApiError } from "../utils/apiErrors.js";
 
 export const registerUser = async (req, res, next) => {
@@ -135,3 +135,24 @@ export const resetPassword = async (req, res, next) => {
         next(err);
     }
 };
+
+export const userProfile = async (req, res, next) => {
+  try {
+    const email = req.user?.email; // set by auth middleware
+
+    if (!email) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const {user,token} = await getUserProfileService(email);
+
+    return res.status(200).json({
+      success: true,
+      user,
+      token
+    });
+  } catch (error) {
+    console.error("User Profile Error:", error);
+    return res.status(500).json({ message: error.message || "Server error" });
+  }
+};  

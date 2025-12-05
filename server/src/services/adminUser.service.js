@@ -6,9 +6,20 @@ import {
   softDeleteUserByEmailDAO
 } from "../dao/user.dao.js";
 
-export const getAllUserService = async () => {
-  return await getAllUsersDAO();
+import { findUsers } from "../dao/user.dao.js";
+
+export const getAllUsersService = async (query) => {
+  const { search, type, page = 1, limit = 20, sort = "latest" } = query;
+
+  return await findUsers({
+    search,
+    type,
+    page: Number(page),
+    limit: Number(limit),
+    sort,
+  });
 };
+
 
 export const getTypedUserService = async (type) => {
   if (!["Personal", "Business", "Admin"].includes(type)) {

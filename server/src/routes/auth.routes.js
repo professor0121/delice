@@ -1,5 +1,6 @@
 import express from 'express';
-import { loginUser,registerUser,loginWithOtp,forgotPassword,forgotPasswordWithOtp,resetPassword} from '../controllers/auth.controller.js';
+import { loginUser,registerUser,loginWithOtp,forgotPassword,forgotPasswordWithOtp,resetPassword,userProfile} from '../controllers/auth.controller.js';
+import userAuthMiddleware from '../middlewares/user.middleware.js';
 const router = express.Router();
 
 
@@ -8,7 +9,7 @@ const router = express.Router();
 
 
 router.post('/login',loginUser);
-// router.post('/user-profile',userProfile);
+router.post('/user-profile',userAuthMiddleware,userProfile);
 router.post('/verify-login-otp',loginWithOtp);
 router.post('/register',registerUser);
 

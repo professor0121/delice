@@ -3,10 +3,12 @@ import { useAppSelector } from '../redux/hooks'
 
 const home = () => {
     const user=useAppSelector((state)=>state.auth.user);
-
+    const token=useAppSelector((state)=>state.auth.token)
+ console.log(user)
   return (
     <div>
-        {user?.email}
+          {token}
+
     </div>
   )
 }

@@ -31,7 +31,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   otpSent: false,
-  token: localStorage.getItem("authToken") || null,
+  token: localStorage.getItem("authToken"),
   step:"login"
 };
 
@@ -76,6 +76,25 @@ export const verifyOtp = createAsyncThunk(
 );
 
 // -------------------------
+// Thunk: fetch logged-in user profile
+// -------------------------
+export const fetchUserProfile = createAsyncThunk<
+  User,         // return type
+  void,         // argument type
+  { rejectValue: string }
+>("users/fetchProfile", async (_, thunkAPI) => {
+  try {
+    const res = await api.get("/users/profile"); // hits your controller
+    localStorage.setItem("authToken",res.data.token);
+    return res.data.user as User;
+  } catch (error: any) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to load user profile"
+    );
+  }
+});
+
+// -------------------------
 // SLICE
 // -------------------------
 const authSlice = createSlice({
@@ -93,6 +112,19 @@ const authSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+
+     .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to load profile";
+      })
       // LOGIN → OTP SENT
       .addCase(loginUser.pending, (state) => {
         state.loading = true;

@@ -1,5 +1,5 @@
 import {
-  getAllUserService,
+  getAllUsersService,
   getTypedUserService,
   getBusinessRequestedUserService,
   getAdvancedUsersService,
@@ -8,10 +8,19 @@ import {
 
 export const getAllUser = async (req, res) => {
   try {
-    const users = await getAllUserService();
-    res.status(200).json({ users });
+    const { users, count } = await getAllUsersService(req.query);
+
+    return res.status(200).json({
+      success: true,
+      total: count,
+      users,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Get All Users Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+    });
   }
 };
 

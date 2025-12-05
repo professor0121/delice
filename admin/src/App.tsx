@@ -5,8 +5,21 @@ import Business from './dashboard/business';
 import UsersPage from './dashboard/users';
 import Login from './auth/login';
 import ProtectedRoute from './components/ProtectedRoute';
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
+import { fetchUserProfile } from "./redux/slice/userAuth";
+import api from './api/axiosInstance'
 
 const App = () => {
+  const dispatch=useAppDispatch();
+   useEffect(() => {
+    // 1️⃣ Set token from localStorage on app load
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      dispatch(fetchUserProfile()); // 2️⃣ fetch profile after token is set
+    }
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>
