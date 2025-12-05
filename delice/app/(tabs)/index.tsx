@@ -1,12 +1,15 @@
 import {  StyleSheet, View, Text } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function HomeScreen() {
+  const storedAccountType =  AsyncStorage.getItem("accountType");
   return (
     <SafeAreaView>
       <View>
-        <Text>Home Screen</Text>
+        <Text>Home Screen hell {storedAccountType}</Text>
       </View>
     </SafeAreaView>
   );

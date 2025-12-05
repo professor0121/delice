@@ -21,7 +21,7 @@ export default function BusinessLayout() {
         <Text style={styles.title}>Business Account</Text>
 
         <Text style={styles.subtitle}>
-          Your business account is not activated.
+          Your business account is not activated.{user?.isActivatedBusinessAccount}
         </Text>
 
         <TouchableOpacity

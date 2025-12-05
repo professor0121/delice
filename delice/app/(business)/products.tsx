@@ -1,12 +1,20 @@
-import { View, Text } from "react-native";
-import { LogOut } from "@/components/LogOut";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ProductStackParamList } from "@/types/navigetion";
 
-export default function BusinessHome() {
+import ShowProducts from "@/components/Product/ShowProducts";
+import AddProduct from "@/components/Product/AddProduct";
+import EditProduct from "@/components/Product/EditProduct";
+import ProductDetails from "@/components/Product/ProductDetails";
+
+const Stack = createNativeStackNavigator<ProductStackParamList>();
+
+export default function ProductStack() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        Business Home Screen
-      </Text>
-    </View>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProductList" component={ShowProducts} />
+      <Stack.Screen name="AddProduct" component={AddProduct} />
+      <Stack.Screen name="EditProduct" component={EditProduct} />
+      <Stack.Screen name="ProductDetails" component={ProductDetails} />
+    </Stack.Navigator>
   );
 }

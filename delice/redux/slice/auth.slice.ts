@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 declare global {
   var authToken: string | null;
@@ -19,7 +19,6 @@ interface User {
   isActivatedBusinessAccount: string;
 }
 
-    
 interface AuthState {
   user: User | null;
   loading: boolean;
@@ -65,21 +64,41 @@ export const loginUser = createAsyncThunk(
 // VERIFY OTP
 export const verifyOtp = createAsyncThunk(
   "auth/verifyOtp",
-  async (
-    data: { email: string; otp: string },
-    { rejectWithValue }
-  ) => {
+  async (data: { email: string; otp: string }, { rejectWithValue }) => {
     try {
       const res = await api.post("/auth/verify-login-otp", data);
       global.authToken = res.data.token; // store token globally
-      await AsyncStorage.setItem('authToken', res.data.token); // store token in AsyncStorage
-        // console.log("OTP Verify Response:", res.data.token);
+      await AsyncStorage.setItem("authToken", res.data.token); // store token in AsyncStorage
+      // console.log("OTP Verify Response:", res.data.token);
       return res.data;
     } catch (err: any) {
       return rejectWithValue(err.response?.data || "OTP Verify Failed");
     }
   }
 );
+
+export const fetchUserProfile = createAsyncThunk(
+  "auth/fetchProfile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/users/profile");
+
+      // Save new token if backend returns it
+      if (res.data.token) {
+        global.authToken = res.data.token;
+        await AsyncStorage.setItem("authToken", res.data.token);
+      }
+
+      // Save accountType
+      await AsyncStorage.setItem("accountType", res.data.user.accountType);
+
+      return res.data.user;
+    } catch (err: any) {
+      return rejectWithValue("Failed to load profile");
+    }
+  }
+);
+
 
 const authSlice = createSlice({
   name: "auth",
@@ -111,9 +130,9 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.otpSent = true;
-      // state.user = action.payload.user; // FIX HERE
+        state.loading = false;
+        state.otpSent = true;
+        // state.user = action.payload.user; // FIX HERE
       })
 
       .addCase(loginUser.rejected, (state, action) => {
@@ -133,6 +152,17 @@ const authSlice = createSlice({
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.user = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) ?? "Failed to fetch user";
       });
   },
 });

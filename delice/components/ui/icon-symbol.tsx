@@ -17,7 +17,8 @@ const MAPPING = {
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
-  'chevron.right': 'chevron-right',
+  'chevron.left': 'chevron-left',       // ← left arrow
+  'chevron.right': 'chevron-right',     // → right arrow
 
   // More icons
   'person.fill': 'person',
