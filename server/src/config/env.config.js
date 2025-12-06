@@ -27,3 +27,10 @@ export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN ;
 export const NODEMAILER_EMAIL = process.env.NODEMAILER_EMAIL ;
 export const NODEMAILER_PASS = process.env.NODEMAILER_PASS ;
 export const NODEMAILER_APP_NAME = process.env.NODEMAILER_APP_NAME ;
+
+export const CLOUDINARY_API_KEY=process.env.CLOUDINARY_API_KEY;
+export const CLOUDINARY_API_SECRET=process.env.CLOUDINARY_API_SECRET;
+export const CLOUDINARY_EMAIL=process.env.CLOUDINARY_EMAIL;
+export const CLOUDINARY_PASSWORD=process.env.CLOUDINARY_PASSWORD;
+export const CLOUDINARY_CLOUD_NAME=process.env.CLOUDINARY_CLOUD_NAME;
+export const CLOUDINARY_URL=process.env.CLOUDINARY_URL;

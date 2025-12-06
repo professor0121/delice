@@ -6,6 +6,7 @@ import { globalErrorHandler } from "./utils/globalErrorHandler.util.js";
 import cors from 'cors'
 import businessRoutes from './routes/business.routes.js'
 import userRoutes from "./routes/user.routes.js"
+import cloudinaryRoutes from "./routes/cloudinary.routes.js"
 
 await connectRedis();
 connectDB();
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/business',businessRoutes)
 app.use('/api/users',userRoutes);
+app.use('/api/cloudinary',cloudinaryRoutes)
 // app.use('/api/products');
 // app.use('/api/orders');
 // app.use('/api/reels');
