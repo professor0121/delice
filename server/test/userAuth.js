@@ -16,7 +16,7 @@ const registerUser = async () => {
   console.log("Response:", data);
 };
 
-registerUser();
+// registerUser();
 
 const loginUser = async () => {
   const res = await fetch("http://localhost:3000/api/auth/login", {
@@ -52,7 +52,7 @@ const loginWithOtp = async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             email: "abhishekkushwahaak0121@gmail.com",
-            otp: "623314" // Replace with the actual OTP received via email
+            otp: "800969" // Replace with the actual OTP received via email
         })
     });
     console.log("STATUS:", res.status);
@@ -60,7 +60,7 @@ const loginWithOtp = async () => {
     console.log("Response:", data);
 };
 
-// loginWithOtp();
+loginWithOtp();
 
 
 const forgotPassword = async () => {
