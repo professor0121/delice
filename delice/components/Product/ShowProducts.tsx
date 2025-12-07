@@ -21,7 +21,7 @@ export default function ShowProducts() {
     if (!user?._id) return;
     setLoading(true);
     try {
-      const res = await api.get(`/products/user/${user._id}`);
+      const res = await api.get(`/products/`);
       setProducts(res.data.products || []);
     } catch (err) {
       console.error(err);

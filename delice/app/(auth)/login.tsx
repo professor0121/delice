@@ -17,6 +17,7 @@ const LoginScreen: React.FC = () => {
   const [otp, setOtp] = useState("");
 
   const handleLogin = (data: { email: string; password: string }) => {
+    console.log(data)
     setEmail(data.email);
     dispatch(loginUser(data));
   };
@@ -52,7 +53,7 @@ const LoginScreen: React.FC = () => {
           </>
         )}
 
-        {error && <Text style={{ color: "red" }}>{error}</Text>}
+        {error && <Text style={{ color: "red" }}>{error.slice(0,20)}</Text>}
       </View>
 
       {loading && (

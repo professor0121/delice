@@ -18,6 +18,7 @@ const RegisterScreen = () => {
   }) => {
     console.log("Register Data:", data);
     dispatch(registerUser(data));
+    alert(data);
     router.replace("/(auth)/login")
   };
 

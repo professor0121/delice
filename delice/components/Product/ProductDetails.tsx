@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
-
+import { View, Text, Image, ScrollView, StyleSheet,TouchableOpacity } from "react-native";
+import { IconSymbol } from "../ui/icon-symbol";
 
 export default function ProductDetails({ route }: any) {
 const { product } = route.params;
@@ -8,6 +8,12 @@ const { product } = route.params;
 
 return (
 <ScrollView contentContainerStyle={{ padding: 16 }}>
+    <TouchableOpacity 
+            onPress={()=>navigation.goBack()}
+            style={{ display: "flex", flexDirection: "row" }}>
+              <IconSymbol size={28} name="chevron.left" color="#000" />
+              <Text>Add Product</Text>
+            </TouchableOpacity>
 <Image source={{ uri: product.productImageUrl || "https://cdn-icons-png.flaticon.com/512/833/833314.png" }} style={styles.image} />
 
 
