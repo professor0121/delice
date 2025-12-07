@@ -1,62 +1,146 @@
 
-import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState } from "react";
+// import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+// import api from "../../redux/api/axiosInstance";
+// import { useAppSelector } from "@/redux/hooks";
+// import ProductCard from "./ProductCard";
+// import { useNavigation } from "@react-navigation/native";
+// import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+// import { ProductStackParamList } from "@/types/navigetion";
+// import { SafeAreaView } from "react-native-safe-area-context";
+
+// type Nav = NativeStackNavigationProp<ProductStackParamList, "ProductList">;
+
+// export default function ShowProducts() {
+//   const user = useAppSelector((s) => s.auth.user);
+//   const [products, setProducts] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   const navigation = useNavigation<Nav>();
+
+//   const load = async () => {
+//     if (!user?._id) return;
+//     setLoading(true);
+//     try {
+//       const res = await api.get(`/products/`);
+//       setProducts(res.data.products || []);
+//     } catch (err) {
+//       console.error(err);
+//       alert("Failed to load products");
+//     }
+//     setLoading(false);
+//   };
+
+//   useEffect(() => {
+//     load();
+//   }, [user?._id]);
+
+//   return (
+//     <SafeAreaView style={{ flex: 1}}>
+//     <View style={{ flex: 1, padding: 16 }}>
+//       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+//         <Text style={{ color: "#555", fontSize: 22, fontWeight: "500" }}>My Products</Text>
+//         <TouchableOpacity onPress={() => navigation.navigate("AddProduct") as any} style={styles.addBtn}>
+//           <Text style={{ color: "#fff" }}>+ Add</Text>
+//         </TouchableOpacity>
+//       </View>
+
+//       <FlatList
+//         data={products}
+//         keyExtractor={(i) => i._id}
+//         renderItem={({ item }) => <ProductCard product={item} onDeleted={load} />}
+//         refreshing={loading}
+//         onRefresh={load}
+//         ListEmptyComponent={() => (
+//           <View style={{ marginTop: 40, alignItems: "center" }}>
+//             <Text style={{ color: "#aaa" }}>No products yet</Text>
+//           </View>
+//         )}
+//       />
+//     </View>
+//     </SafeAreaView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   addBtn: {
+//     backgroundColor: "#007AFF",
+//     paddingHorizontal: 12,
+//     paddingVertical: 8,
+//     borderRadius: 8,
+//   },
+// });
+
+
+
+import React, { useEffect } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
-import api from "../../redux/api/axiosInstance";
-import { useAppSelector } from "@/redux/hooks";
-import ProductCard from "./ProductCard";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ProductStackParamList } from "@/types/navigetion";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import { ProductStackParamList } from "@/types/navigetion";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { getProducts } from "@/redux/slice/product.slice";
+import ProductCard from "./ProductCard";
 
 type Nav = NativeStackNavigationProp<ProductStackParamList, "ProductList">;
 
 export default function ShowProducts() {
-  const user = useAppSelector((s) => s.auth.user);
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const navigation = useNavigation<Nav>();
+  const dispatch = useAppDispatch();
 
-  const load = async () => {
-    if (!user?._id) return;
-    setLoading(true);
-    try {
-      const res = await api.get(`/products/`);
-      setProducts(res.data.products || []);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to load products");
-    }
-    setLoading(false);
-  };
+  const { products, listLoading } = useAppSelector((s) => s.product);
+  const user = useAppSelector((s) => s.auth.user);
 
   useEffect(() => {
-    load();
+    if (user?._id) {
+      dispatch(getProducts());
+    }
   }, [user?._id]);
 
   return (
-    <SafeAreaView style={{ flex: 1}}>
-    <View style={{ flex: 1, padding: 16 }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-        <Text style={{ color: "#555", fontSize: 22, fontWeight: "500" }}>My Products</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("AddProduct") as any} style={styles.addBtn}>
-          <Text style={{ color: "#fff" }}>+ Add</Text>
-        </TouchableOpacity>
-      </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1, padding: 16 }}>
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 12,
+          }}
+        >
+          <Text style={{ color: "#555", fontSize: 22, fontWeight: "500" }}>
+            My Products
+          </Text>
 
-      <FlatList
-        data={products}
-        keyExtractor={(i) => i._id}
-        renderItem={({ item }) => <ProductCard product={item} onDeleted={load} />}
-        refreshing={loading}
-        onRefresh={load}
-        ListEmptyComponent={() => (
-          <View style={{ marginTop: 40, alignItems: "center" }}>
-            <Text style={{ color: "#aaa" }}>No products yet</Text>
-          </View>
-        )}
-      />
-    </View>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("AddProduct") as any}
+            style={styles.addBtn}
+          >
+            <Text style={{ color: "#fff" }}>+ Add</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Product list */}
+        <FlatList
+          data={products}
+          keyExtractor={(i) => i._id}
+          refreshing={listLoading}
+          onRefresh={() => dispatch(getProducts())}
+          renderItem={({ item }) => (
+            <ProductCard
+              product={item}
+              onDeleted={() => dispatch(getProducts())}
+            />
+          )}
+          ListEmptyComponent={() => (
+            <View style={{ marginTop: 40, alignItems: "center" }}>
+              <Text style={{ color: "#aaa" }}>No products yet</Text>
+            </View>
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 }
