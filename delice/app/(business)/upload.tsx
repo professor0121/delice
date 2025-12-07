@@ -1,12 +1,25 @@
-import { View, Text } from "react-native";
-import { LogOut } from "@/components/LogOut";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ReelStackParamList } from "@/types/navigetion";
 
-export default function BusinessHome() {
+import ShowReels from "@/components/Reel/ShowReels";
+import EditReel from "@/components/Reel/EditReel";
+import CreateReel from "@/components/Reel/CreatReel";
+
+const Stack = createNativeStackNavigator<ReelStackParamList>();
+
+export default function ReelStack() {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold" }}>
-        Business Home Screen
-      </Text>
-    </View>
+    <Stack.Navigator initialRouteName="ReelList" screenOptions={{ headerShown: false }}>
+
+      {/* Reel List Screen */}
+      <Stack.Screen name="ReelList" component={ShowReels} />
+
+      {/* Edit Reel Screen */}
+      <Stack.Screen name="EditReel" component={EditReel} />
+
+      {/* Create Reel Screen */}
+      <Stack.Screen name="CreateReel" component={CreateReel} />
+
+    </Stack.Navigator>
   );
 }
