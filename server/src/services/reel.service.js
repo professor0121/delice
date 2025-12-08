@@ -11,9 +11,10 @@ export const getReelByIdService = async (id) => {
   return reel;
 };
 
-export const getAllReelsService = async () => {
-  return await reelDAO.getAllReelsDAO();
+export const getAllReelsService = async (filter, skip, limit, sort) => {
+  return await reelDAO.getAllReelsDAO(filter, skip, limit, sort);
 };
+
 
 export const updateReelByIdService = async (id, updateData) => {
   const reel = await reelDAO.updateReelByIdDAO(id, updateData);

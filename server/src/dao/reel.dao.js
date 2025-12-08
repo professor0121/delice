@@ -12,11 +12,14 @@ export const getReelByIdDAO = async (id) => {
     .populate("comments");
 };
 
-export const getAllReelsDAO = async () => {
-  return await Reel.find()
-    .sort({ createdAt: -1 })
-    .populate("postedBy", "username email");
+export const getAllReelsDAO = async (filter, skip, limit, sort) => {
+  return await Reel.find(filter)
+    .sort(sort)
+    .skip(skip)
+    .limit(limit);
 };
+
+
 
 export const updateReelByIdDAO = async (id, updateData) => {
   return await Reel.findByIdAndUpdate(id, updateData, { new: true });

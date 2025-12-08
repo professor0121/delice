@@ -16,6 +16,7 @@ import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { IconSymbol } from "../ui/icon-symbol";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Image } from "react-native";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -90,35 +91,39 @@ const ReelItem: React.FC<ReelItemProps> = ({
     );
   };
 
- const handleToggleMute = async () => {
-  if (!videoRef.current) return;
-  try {
-    await videoRef.current.setIsMutedAsync(!muted);
-    onToggleMute(!muted); // update parent state
-  } catch (e) {
-    console.log(e);
-  }
-};
+  const handleToggleMute = async () => {
+    if (!videoRef.current) return;
+    try {
+      await videoRef.current.setIsMutedAsync(!muted);
+      onToggleMute(!muted); // update parent state
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
+  const handleBuyNow = async () => {
+    console.log("buy now is clicked");
+  };
 
   return (
     <View style={styles.reelContainer}>
-      <TouchableOpacity 
-       activeOpacity={1} 
-      onPress={handleToggleMute}
-      style={styles.reelContainer}>
-      <Video
-        ref={videoRef}
-        source={{ uri: item.uri }}
-        style={styles.video}
-        resizeMode={ResizeMode.COVER}
-        isLooping
-        shouldPlay={false}
-        onPlaybackStatusUpdate={onPlaybackStatusUpdate}
-        useNativeControls={false}
-        isMuted={muted}
-        progressUpdateIntervalMillis={200}
-      />
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={handleToggleMute}
+        style={styles.reelContainer}
+      >
+        <Video
+          ref={videoRef}
+          source={{ uri: item.uri }}
+          style={styles.video}
+          resizeMode={ResizeMode.COVER}
+          isLooping
+          shouldPlay={false}
+          onPlaybackStatusUpdate={onPlaybackStatusUpdate}
+          useNativeControls={false}
+          isMuted={muted}
+          progressUpdateIntervalMillis={200}
+        />
       </TouchableOpacity>
       {loading && (
         <View style={styles.loadingOverlay} pointerEvents="none">
@@ -128,6 +133,45 @@ const ReelItem: React.FC<ReelItemProps> = ({
 
       <View style={styles.controlsOverlay}>
         <View style={styles.leftColumn}>
+          <View
+            style={{
+              padding: 10,
+              width: 140,
+              alignItems: "center",
+              borderRadius: 12,
+              backgroundColor: "rgba(0,0,0,0.4)",
+            }}
+          >
+            <Image
+              source={{ uri: "https://picsum.photos/seed/picsum/200/300" }}
+              style={{ width: 100, height: 100, borderRadius: 12 }}
+            />
+
+            <TouchableOpacity
+              onPress={handleBuyNow}
+              style={{
+                marginTop: 10,
+                paddingVertical: 6,
+                paddingHorizontal: 15,
+                borderRadius: 8,
+                backgroundColor: "#ffffff",
+              }}
+            >
+              <Text style={{ color: "black", fontWeight: "600" }}>Buy Now</Text>
+            </TouchableOpacity>
+
+            <Text
+              style={{
+                color: "white",
+                marginTop: 8,
+                fontSize: 14,
+                fontWeight: "500",
+              }}
+            >
+              product of reel
+            </Text>
+          </View>
+
           {/* Profile + Follow */}
           <View style={styles.profileContainer}>
             <View style={styles.avatar} />
@@ -332,7 +376,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#000",
   },
-    video: {
+  video: {
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     position: "absolute",
