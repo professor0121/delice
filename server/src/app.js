@@ -7,6 +7,7 @@ import businessRoutes from './routes/business.routes.js'
 import userRoutes from "./routes/user.routes.js"
 import cloudinaryRoutes from "./routes/cloudinary.routes.js"
 import productRoutes from "./routes/product.routes.js"
+import reelRoutes from "./routes/reel.routes.js"
 
 await connectRedis();
 connectDB();
@@ -27,7 +28,7 @@ app.use('/api/users',userRoutes);
 app.use('/api/cloudinary',cloudinaryRoutes)
 app.use('/api/products',productRoutes);
 // app.use('/api/orders');
-// app.use('/api/reels');
+app.use('/api/reels',reelRoutes);
 
 
 export default app;
