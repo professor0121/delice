@@ -3,13 +3,15 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance";
 
 export interface UploadState {
-  image: string;     // single image
-  images: string[];  // gallery images
+  reelVideo: string;
+  image: string; // single image
+  images: string[]; // gallery images
   loading: boolean;
   error: string | null;
 }
 
 const initialState: UploadState = {
+  reelVideo: "",
   image: "",
   images: [],
   loading: false,
@@ -63,6 +65,33 @@ export const uploadImages = createAsyncThunk(
 );
 
 // -------------------------------------------------
+//  THUNK: Upload Reel Video (Single Video)
+// -------------------------------------------------
+export const uploadReelVideo = createAsyncThunk(
+  "upload/reelVideo",
+  async (file: { uri: string; name: string; type: string }, { rejectWithValue }) => {
+    try {
+      const form = new FormData();
+      form.append("file", {
+        uri: file.uri,
+        name: file.name,
+        type: file.type,
+      } as any);
+console.log(form)
+      const { data } = await api.post("/cloudinary/upload/single", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log(data)
+      return data.url; // Single video URL returned
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Video upload failed"
+      );
+    }
+  }
+);
+
+// -------------------------------------------------
 //  SLICE
 // -------------------------------------------------
 const uploadSlice = createSlice({
@@ -105,6 +134,22 @@ const uploadSlice = createSlice({
         state.images = action.payload; // multiple URLs
       })
       .addCase(uploadImages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    // -------------------------------------------------
+    // Single video upload reducer
+    // -------------------------------------------------
+    builder
+      .addCase(uploadReelVideo.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(uploadReelVideo.fulfilled, (state, action) => {
+        state.loading = false;
+        state.reelVideo = action.payload; // set uploaded video URL
+      })
+      .addCase(uploadReelVideo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

@@ -3,13 +3,15 @@ import authReducer from "./slice/auth.slice";
 import businessReducer from "./slice/business.slice"
 import uploadReducer from "./slice/upload.slice"
 import productReducer from "./slice/product.slice"
+import reelReducer from './slice/reel.slice'
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     business:businessReducer,
     upload:uploadReducer,
-    product:productReducer
+    product:productReducer,
+    reel:reelReducer
   },
 });
 

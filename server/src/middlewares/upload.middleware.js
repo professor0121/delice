@@ -5,7 +5,7 @@ import cloudinary from "../config/cloudinary.config.js";
 const storage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
-    const isVideo = file.mimetype.startsWith("video/");
+    const isVideo = file.mimetype.startsWith("video/")|| file.originalname.endsWith(".mp4");;
 
     return {
       folder: "delice/uploads",

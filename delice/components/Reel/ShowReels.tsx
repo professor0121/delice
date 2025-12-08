@@ -13,10 +13,9 @@ import {
   ViewToken,
 } from "react-native";
 import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { IconSymbol } from "../ui/icon-symbol";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
+import { navigate } from "expo-router/build/global-state/routing";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -240,7 +239,7 @@ const ReelItem: React.FC<ReelItemProps> = ({
   );
 };
 
-const ShowReels: React.FC = () => {
+const ShowReels: React.FC = ({navigation}:any) => {
   const [data] = useState<ReelItemType[]>(SAMPLE_REELS);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [muted, setMuted] = useState<boolean>(true);
@@ -265,6 +264,10 @@ const ShowReels: React.FC = () => {
     ),
     [currentIndex, muted]
   );
+     const handleReelCreation = () => {
+    navigation.navigate("CreateReel");
+  };
+
 
   return (
     <View style={styles.container}>
@@ -292,12 +295,11 @@ const ShowReels: React.FC = () => {
         })}
       />
 
-      {/* <View style={styles.footer}>
-        <Text style={styles.footerText}>
-          Index: {currentIndex + 1} / {data.length} •{" "}
-          {muted ? "Muted" : "Sound"}
-        </Text>
-      </View> */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={handleReelCreation}>
+          <MaterialIcons name="photo-camera" size={32} color="#fff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -421,7 +423,8 @@ const styles = StyleSheet.create({
   footer: {
     position: "absolute",
     top: Platform.OS === "android" ? 40 : 60,
-    alignSelf: "center",
+    alignSelf: "flex-end",
+    marginRight: 15,
   },
   footerText: { color: "#fff" },
 });

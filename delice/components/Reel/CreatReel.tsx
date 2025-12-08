@@ -1,225 +1,204 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
-  View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-  Image,
+  View,
+  Modal,
+  FlatList,
+  ListRenderItemInfo,
 } from "react-native";
+import { IconSymbol } from "../ui/icon-symbol";
 import * as ImagePicker from "expo-image-picker";
-import { Video, ResizeMode } from "expo-av";
-import api from "../../redux/api/axiosInstance";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useAppDispatch ,useAppSelector} from "@/redux/hooks";
+import { uploadReelVideo } from "@/redux/slice/upload.slice";
+import { createReel } from "@/redux/slice/reel.slice";
+import { getProducts } from "@/redux/slice/product.slice";
 
-export default function CreateReel({ navigation }: any) {
-  const [caption, setCaption] = useState("");
-  const [video, setVideo] = useState<any>(null);
-  const [thumbnail, setThumbnail] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-
-  // ---------------------------
-  // PICK VIDEO
-  // ---------------------------
-  const pickVideo = async () => {
-    const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      quality: 1,
-    });
-
-    if (!res.canceled) {
-      setVideo(res.assets[0]);
-    }
+interface CreatReelProps {
+  navigation: {
+    goBack: () => void;
   };
+}
 
-  // ---------------------------
-  // PICK THUMBNAIL IMAGE
-  // ---------------------------
-  const pickThumbnail = async () => {
-    const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
+interface VideoAsset {
+  uri: string;
+  fileName?: string | null;
+  type?: string;
+}
 
-    if (!res.canceled) {
-      setThumbnail(res.assets[0]);
-    }
-  };
+const CreatReel: React.FC<CreatReelProps> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
+  const reel = useAppSelector((state: any) => state.reel);
+  const {user} = useAppSelector((state: any) => state.auth);
+  const products =useAppSelector((state:any)=>state.product)
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [video, setVideo] = useState<VideoAsset | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [dropdownVisible, setDropdownVisible] = useState<boolean>(false);
 
-  // ---------------------------
-  // UPLOAD FILE TO BACKEND
-  // ---------------------------
-  const uploadFile = async (file: any, type: "video" | "image") => {
-    const formData = new FormData();
+  // const products: string[] = ["Shoes", "T-Shirt", "Bag", "Watch", "Laptop"];
 
-    formData.append("file", {
+  // useEffect(()=>{
+  //   dispatch(getProducts());
+  // },[products])
+  // ---- PICK VIDEO ----
+const pickVideo = async () => {
+  const res = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+    quality: 1,
+  });
+
+  if (!res.canceled) {
+    const file = res.assets[0];
+
+    // Convert Expo file to JS File for Axios / Multer
+    const videoFile = {
       uri: file.uri,
-      name: file.fileName || `${type}.mp4`,
-      type: file.mimeType || (type === "video" ? "video/mp4" : "image/jpeg"),
-    } as any);
+      name: file.fileName || `video-${Date.now()}.mp4`,
+      type: file.type ? `${file.type}/mp4` : "video/mp4",
+    };
 
-    const res = await api.post(`/upload/single`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    setVideo(file);  // update UI
+    dispatch(uploadReelVideo(videoFile as any));
+  }
+};
 
-    return res.data.url;
-  };
 
-  // ---------------------------
-  // CREATE REEL
-  // ---------------------------
-  const handleCreateReel = async () => {
-    if (!video) {
-      alert("Please select a video!");
-      return;
-    }
 
-    setLoading(true);
+ const handleCreate = () => {
+  if (!reel.reelVideo) {
+    alert("Please select and upload a video first!");
+    return;
+  }
 
-    try {
-      // Upload video
-      const videoUrl = await uploadFile(video, "video");
+  if (!title.trim()) {
+    alert("Please enter a title");
+    return;
+  }
 
-      // Upload thumbnail (optional)
-      let thumbUrl = null;
-      if (thumbnail) {
-        thumbUrl = await uploadFile(thumbnail, "image");
-      }
+  dispatch(
+    createReel({
+      title,
+      description,
+      videoUrl: reel.reelVideo,         // use uploaded video URL
+      reelProduct: selectedProduct || "", // product selected from dropdown
+      postedBy: user._id,     // replace with actual user ID if needed
+    })
+  );
 
-      // Save reel metadata
-      await api.post("/reels", {
-        caption,
-        videoUrl,
-        thumbnailUrl: thumbUrl,
-      });
+  // reset local states after creation
+  setTitle("");
+  setDescription("");
+  setVideo(null);
+  setSelectedProduct("");
+};
 
-      alert("Reel created!");
-      navigation.goBack();
-    } catch (err) {
-      console.log(err);
-      alert("Failed to create reel");
-    }
-
-    setLoading(false);
-  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Create Reel 🎬</Text>
+    <SafeAreaView style={{ flex: 1, padding: 16 }}>
+      {/* HEADER */}
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <IconSymbol size={28} name="chevron.left" color="#000" />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 18, marginLeft: 10 }}>Add Reel</Text>
+      </View>
 
-      {/* PICK VIDEO BUTTON */}
-      <TouchableOpacity style={styles.btn} onPress={pickVideo}>
-        <Text style={styles.btnText}>
-          {video ? "Change Video" : "Pick Video"}
-        </Text>
-      </TouchableOpacity>
-
-      {/* VIDEO PREVIEW */}
-      {video && (
-        <Video
-          source={{ uri: video.uri }}
-          style={styles.video}
-          useNativeControls
-          resizeMode={ResizeMode.COVER}
+      {/* INPUTS */}
+      <View style={{ gap: 12, flex: 1 }}>
+        <TextInput
+          placeholder="Enter reel title"
+          value={title}
+          onChangeText={setTitle}
+          style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8 }}
         />
-      )}
 
-      {/* PICK THUMBNAIL BUTTON */}
-      <TouchableOpacity style={styles.btnSecondary} onPress={pickThumbnail}>
-        <Text style={styles.btnText}>
-          {thumbnail ? "Change Thumbnail" : "Add Thumbnail (Optional)"}
-        </Text>
-      </TouchableOpacity>
+        <TextInput
+          placeholder="Enter reel description"
+          value={description}
+          onChangeText={setDescription}
+          style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8 }}
+        />
 
-      {/* THUMBNAIL PREVIEW */}
-      {thumbnail && <Image source={{ uri: thumbnail.uri }} style={styles.thumb} />}
+        {/* VIDEO PICKER */}
+        <TouchableOpacity
+          onPress={pickVideo}
+          style={{
+            borderWidth: 1,
+            borderColor: "#ccc",
+            padding: 12,
+            borderRadius: 8,
+            alignItems: "center",
+          }}
+        >
+          <Text>{video ? "Change Video" : "Select Video"}</Text>
+        </TouchableOpacity>
 
-      {/* CAPTION INPUT */}
-      <TextInput
-        style={styles.input}
-        placeholder="Write a caption..."
-        placeholderTextColor="#666"
-        value={caption}
-        onChangeText={setCaption}
-      />
+        {/* PRODUCT DROPDOWN */}
+        <TouchableOpacity
+          onPress={() => setDropdownVisible(true)}
+          style={{ borderWidth: 1, borderColor: "#ccc", padding: 12, borderRadius: 8 }}
+        >
+          <Text>{selectedProduct ? selectedProduct : "Select product from list"}</Text>
+        </TouchableOpacity>
+
+        {/* DROPDOWN MODAL */}
+        <Modal visible={dropdownVisible} transparent animationType="fade">
+          <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", padding: 20 }}>
+            <View style={{ backgroundColor: "#fff", borderRadius: 10, padding: 20 }}>
+              <Text style={{ fontSize: 16, marginBottom: 10 }}>Select Product</Text>
+
+              <FlatList
+                data={products}
+                keyExtractor={(item) => item}
+                renderItem={({ item }: ListRenderItemInfo<string>) => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      setSelectedProduct(item);
+                      setDropdownVisible(false);
+                    }}
+                    style={{ paddingVertical: 10 }}
+                  >
+                    <Text>{item}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+
+              <TouchableOpacity
+                onPress={() => setDropdownVisible(false)}
+                style={{
+                  marginTop: 10,
+                  padding: 12,
+                  backgroundColor: "#ddd",
+                  borderRadius: 8,
+                  alignItems: "center",
+                }}
+              >
+                <Text>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </View>
 
       {/* CREATE BUTTON */}
       <TouchableOpacity
-        style={styles.btnCreate}
-        disabled={loading}
-        onPress={handleCreateReel}
+        onPress={handleCreate}
+        style={{
+          backgroundColor: "#000",
+          padding: 15,
+          borderRadius: 8,
+          alignItems: "center",
+          marginBottom: 10,
+        }}
       >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.btnCreateText}>Upload Reel</Text>
-        )}
+        <Text style={{ color: "#fff", fontSize: 16 }}>Create Reel</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
-}
+};
 
-// ---------------------------
-// STYLES
-// ---------------------------
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#000",
-    padding: 16,
-  },
-  header: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 16,
-  },
-  btn: {
-    backgroundColor: "#1e90ff",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-  btnSecondary: {
-    backgroundColor: "#333",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
-  },
-  btnText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 16,
-  },
-  video: {
-    width: "100%",
-    height: 250,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  thumb: {
-    width: 120,
-    height: 120,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  input: {
-    backgroundColor: "#111",
-    padding: 12,
-    borderRadius: 10,
-    color: "#fff",
-    marginBottom: 16,
-  },
-  btnCreate: {
-    backgroundColor: "#28a745",
-    padding: 14,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  btnCreateText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "600",
-  },
-});
+export default CreatReel;
