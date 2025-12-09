@@ -74,7 +74,7 @@ export const getAllReelsController = async (req, res) => {
       page,
       limit,
       results: reels.length,
-      data: reels,
+     reels,
     });
 
   } catch (err) {

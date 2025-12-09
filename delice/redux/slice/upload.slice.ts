@@ -77,11 +77,9 @@ export const uploadReelVideo = createAsyncThunk(
         name: file.name,
         type: file.type,
       } as any);
-console.log(form)
       const { data } = await api.post("/cloudinary/upload/single", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log(data)
       return data.url; // Single video URL returned
     } catch (err: any) {
       return rejectWithValue(

@@ -25,6 +25,19 @@ export interface ReelState {
   error: string | null;
 }
 
+// API RESPONSE TYPES
+interface GetAllReelsResponse {
+  page: number;
+  limit: number;
+  results: number;
+  reels: Reel[];
+}
+
+interface DeleteReelResponse {
+  message: string;
+  reel: Reel; // backend returns full reel object
+}
+
 // --------------------------
 // INITIAL STATE
 // --------------------------
@@ -43,14 +56,19 @@ const initialState: ReelState = {
 export const createReel = createAsyncThunk(
   "reel/create",
   async (
-    reelData: Omit<Reel, "_id" | "createdAt" | "updatedAt" | "likes" | "comments">,
+    reelData: Omit<
+      Reel,
+      "_id" | "createdAt" | "updatedAt" | "likes" | "comments"
+    >,
     { rejectWithValue }
   ) => {
     try {
       const { data } = await api.post("/reels", reelData);
-      return data;
+      return data as Reel;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to create reel");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to create reel"
+      );
     }
   }
 );
@@ -61,9 +79,12 @@ export const getAllReels = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/reels");
-      return data;
+      console.log(data)
+      return data as GetAllReelsResponse;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch reels");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch reels"
+      );
     }
   }
 );
@@ -74,9 +95,11 @@ export const getReelById = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/reels/${id}`);
-      return data;
+      return data as Reel;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch reel");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch reel"
+      );
     }
   }
 );
@@ -84,12 +107,17 @@ export const getReelById = createAsyncThunk(
 // UPDATE Reel
 export const updateReel = createAsyncThunk(
   "reel/update",
-  async ({ id, updates }: { id: string; updates: Partial<Reel> }, { rejectWithValue }) => {
+  async (
+    { id, updates }: { id: string; updates: Partial<Reel> },
+    { rejectWithValue }
+  ) => {
     try {
       const { data } = await api.put(`/reels/${id}`, updates);
-      return data;
+      return data as Reel;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to update reel");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to update reel"
+      );
     }
   }
 );
@@ -100,9 +128,11 @@ export const deleteReel = createAsyncThunk(
   async (id: string, { rejectWithValue }) => {
     try {
       const { data } = await api.delete(`/reels/${id}`);
-      return data;
+      return data as DeleteReelResponse;
     } catch (err: any) {
-      return rejectWithValue(err.response?.data?.message || "Failed to delete reel");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to delete reel"
+      );
     }
   }
 );
@@ -127,58 +157,90 @@ const reelSlice = createSlice({
   },
   extraReducers: (builder) => {
     // CREATE
-    builder.addCase(createReel.pending, (state) => { state.loading = true; });
-    builder.addCase(createReel.fulfilled, (state, action: PayloadAction<Reel>) => {
-      state.loading = false;
-      state.reels.push(action.payload);
+    builder.addCase(createReel.pending, (state) => {
+      state.loading = true;
     });
+    builder.addCase(
+      createReel.fulfilled,
+      (state, action: PayloadAction<Reel>) => {
+        state.loading = false;
+        state.reels.push(action.payload);
+      }
+    );
     builder.addCase(createReel.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
 
     // GET ALL
-    builder.addCase(getAllReels.pending, (state) => { state.loading = true; });
-    builder.addCase(getAllReels.fulfilled, (state, action: PayloadAction<Reel[]>) => {
-      state.loading = false;
-      state.reels = action.payload;
+    builder.addCase(getAllReels.pending, (state) => {
+      state.loading = true;
     });
+    builder.addCase(
+      getAllReels.fulfilled,
+      (state, action: PayloadAction<GetAllReelsResponse>) => {
+        state.loading = false;
+        state.reels = action.payload.reels || [];
+      }
+    );
     builder.addCase(getAllReels.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
 
     // GET BY ID
-    builder.addCase(getReelById.pending, (state) => { state.loading = true; });
-    builder.addCase(getReelById.fulfilled, (state, action: PayloadAction<Reel>) => {
-      state.loading = false;
-      state.currentReel = action.payload;
+    builder.addCase(getReelById.pending, (state) => {
+      state.loading = true;
     });
+    builder.addCase(
+      getReelById.fulfilled,
+      (state, action: PayloadAction<Reel>) => {
+        state.loading = false;
+        state.currentReel = action.payload;
+      }
+    );
     builder.addCase(getReelById.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
 
     // UPDATE
-    builder.addCase(updateReel.pending, (state) => { state.loading = true; });
-    builder.addCase(updateReel.fulfilled, (state, action: PayloadAction<Reel>) => {
-      state.loading = false;
-      const index = state.reels.findIndex(r => r._id === action.payload._id);
-      if (index !== -1) state.reels[index] = action.payload;
-      if (state.currentReel?._id === action.payload._id) state.currentReel = action.payload;
+    builder.addCase(updateReel.pending, (state) => {
+      state.loading = true;
     });
+    builder.addCase(
+      updateReel.fulfilled,
+      (state, action: PayloadAction<Reel>) => {
+        state.loading = false;
+        const index = state.reels.findIndex(
+          (r) => r._id === action.payload._id
+        );
+        if (index !== -1) state.reels[index] = action.payload;
+
+        if (state.currentReel?._id === action.payload._id)
+          state.currentReel = action.payload;
+      }
+    );
     builder.addCase(updateReel.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
 
     // DELETE
-    builder.addCase(deleteReel.pending, (state) => { state.loading = true; });
-    builder.addCase(deleteReel.fulfilled, (state, action: PayloadAction<{ id: string }>) => {
-      state.loading = false;
-      state.reels = state.reels.filter(r => r._id !== action.payload.id);
-      if (state.currentReel?._id === action.payload.id) state.currentReel = null;
+    builder.addCase(deleteReel.pending, (state) => {
+      state.loading = true;
     });
+    builder.addCase(
+      deleteReel.fulfilled,
+      (state, action: PayloadAction<DeleteReelResponse>) => {
+        state.loading = false;
+        const deletedId = action.payload.reel._id;
+
+        state.reels = state.reels.filter((r) => r._id !== deletedId);
+
+        if (state.currentReel?._id === deletedId) state.currentReel = null;
+      }
+    );
     builder.addCase(deleteReel.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;

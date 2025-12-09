@@ -15,7 +15,8 @@ import {
 import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
-import { navigate } from "expo-router/build/global-state/routing";
+import { useAppDispatch,useAppSelector } from "@/redux/hooks";
+import { getAllReels } from "@/redux/slice/reel.slice";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -64,12 +65,14 @@ const ReelItem: React.FC<ReelItemProps> = ({
   onToggleMute,
   muted,
 }) => {
+  const dispatch=useAppDispatch();
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
+
     const managePlayback = async () => {
       if (!videoRef.current) return;
       try {
@@ -239,10 +242,82 @@ const ReelItem: React.FC<ReelItemProps> = ({
   );
 };
 
-const ShowReels: React.FC = ({navigation}:any) => {
-  const [data] = useState<ReelItemType[]>(SAMPLE_REELS);
+// const ShowReels: React.FC = ({navigation}:any) => {
+//   const [data] = useState<ReelItemType[]>(SAMPLE_REELS);
+//   const [currentIndex, setCurrentIndex] = useState<number>(0);
+//   const [muted, setMuted] = useState<boolean>(true);
+
+//   const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 80 });
+
+//   const onViewRef = useRef((info: { viewableItems: ViewToken[] }) => {
+//     if (info.viewableItems && info.viewableItems.length > 0) {
+//       const index = info.viewableItems[0].index;
+//       if (typeof index === "number") setCurrentIndex(index);
+//     }
+//   });
+
+//   const renderItem = useCallback(
+//     ({ item, index }: ListRenderItemInfo<ReelItemType>) => (
+//       <ReelItem
+//         item={item}
+//         isActive={index === currentIndex}
+//         onToggleMute={setMuted}
+//         muted={muted}
+//       />
+//     ),
+//     [currentIndex, muted]
+//   );
+//      const handleReelCreation = () => {
+//     navigation.navigate("CreateReel");
+//   };
+
+
+//   return (
+//     <View style={styles.container}>
+//       <StatusBar hidden={false} translucent backgroundColor="transparent" />
+
+//       <FlatList
+//         data={data}
+//         keyExtractor={(item) => item.id}
+//         renderItem={renderItem}
+//         pagingEnabled
+//         decelerationRate="fast"
+//         snapToInterval={SCREEN_HEIGHT}
+//         snapToAlignment="start"
+//         showsVerticalScrollIndicator={false}
+//         onViewableItemsChanged={onViewRef.current}
+//         viewabilityConfig={viewabilityConfig.current}
+//         initialNumToRender={2}
+//         maxToRenderPerBatch={2}
+//         windowSize={3}
+//         removeClippedSubviews
+//         getItemLayout={(_, index) => ({
+//           length: SCREEN_HEIGHT,
+//           offset: SCREEN_HEIGHT * index,
+//           index,
+//         })}
+//       />
+
+//       <View style={styles.footer}>
+//         <TouchableOpacity onPress={handleReelCreation}>
+//           <MaterialIcons name="photo-camera" size={32} color="#fff" />
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
+
+const ShowReels: React.FC = ({ navigation }: any) => {
+  const dispatch = useAppDispatch();
+  const { reels, loading } = useAppSelector((state:any) => state.reel);
+
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [muted, setMuted] = useState<boolean>(true);
+
+  useEffect(() => {
+    dispatch(getAllReels());
+  }, []);
+  console.log(reels)
 
   const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 80 });
 
@@ -264,17 +339,29 @@ const ShowReels: React.FC = ({navigation}:any) => {
     ),
     [currentIndex, muted]
   );
-     const handleReelCreation = () => {
-    navigation.navigate("CreateReel");
-  };
 
+  const handleReelCreation = () => navigation.navigate("CreateReel");
+
+  // loading state
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#000" }}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <StatusBar hidden={false} translucent backgroundColor="transparent" />
 
       <FlatList
-        data={data}
+        data={reels?.map((r: any) => ({
+          id: r._id,
+          uri: r.videoUrl,
+          caption: r.caption,
+          liked: false,
+        }))}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         pagingEnabled
@@ -303,6 +390,7 @@ const ShowReels: React.FC = ({navigation}:any) => {
     </View>
   );
 };
+
 
 export default ShowReels;
 
