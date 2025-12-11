@@ -63,7 +63,7 @@ export const createReel = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const { data } = await api.post("/reels", reelData);
+      const { data } = await api.post("/reels/create-reel", reelData);
       return data as Reel;
     } catch (err: any) {
       return rejectWithValue(

@@ -15,8 +15,10 @@ import {
 import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Image } from "react-native";
-import { useAppDispatch,useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getAllReels } from "@/redux/slice/reel.slice";
+import { useNavigation } from "@react-navigation/native";
+import { router } from "expo-router";
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -28,6 +30,8 @@ interface ReelItemType {
   uri: string;
   caption: string;
   liked?: boolean; // optional
+  user: any;
+  product: any;
 }
 
 interface ReelItemProps {
@@ -37,42 +41,20 @@ interface ReelItemProps {
   muted: boolean;
 }
 
-// Sample data
-const SAMPLE_REELS: ReelItemType[] = [
-  {
-    id: "1",
-    uri: "https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",
-    caption: "Big Buck Bunny",
-    liked: false,
-  },
-  {
-    id: "2",
-    uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    caption: "Elephant's Dream",
-    liked: false,
-  },
-  {
-    id: "3",
-    uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-    caption: "Joyrides",
-    liked: false,
-  },
-];
-
 const ReelItem: React.FC<ReelItemProps> = ({
   item,
   isActive,
   onToggleMute,
   muted,
 }) => {
-  const dispatch=useAppDispatch();
+  const navigation = useNavigation<any>();
+  const dispatch = useAppDispatch();
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-
     const managePlayback = async () => {
       if (!videoRef.current) return;
       try {
@@ -145,11 +127,11 @@ const ReelItem: React.FC<ReelItemProps> = ({
             }}
           >
             <Image
-              source={{ uri: "https://picsum.photos/seed/picsum/200/300" }}
+              source={{ uri: item.product?.productImageUrl }}
               style={{ width: 100, height: 100, borderRadius: 12 }}
             />
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={handleBuyNow}
               style={{
                 marginTop: 10,
@@ -160,6 +142,20 @@ const ReelItem: React.FC<ReelItemProps> = ({
               }}
             >
               <Text style={{ color: "black", fontWeight: "600" }}>Buy Now</Text>
+            </TouchableOpacity> */}
+            <TouchableOpacity
+              onPress={() =>
+                router.push({
+                  pathname: "/(business)/products",
+                  params: {
+                    addedPath:"ProductDetails",
+                    productId: item?.product?._id,
+                    product: JSON.stringify(item?.product),
+                  },
+                })
+              }
+            >
+              <Text style={{ color: "white" }}>Buy Now</Text>
             </TouchableOpacity>
 
             <Text
@@ -170,7 +166,7 @@ const ReelItem: React.FC<ReelItemProps> = ({
                 fontWeight: "500",
               }}
             >
-              product of reel
+              {item.product?.title}
             </Text>
           </View>
 
@@ -178,7 +174,7 @@ const ReelItem: React.FC<ReelItemProps> = ({
           <View style={styles.profileContainer}>
             <View style={styles.avatar} />
             <View style={styles.userInfo}>
-              <Text style={styles.userNameTxt}>userName</Text>
+              <Text style={styles.userNameTxt}>{item.user?.userName}</Text>
               <Text style={styles.musicTxt}>musicview</Text>
             </View>
             <TouchableOpacity style={styles.followBtn}>
@@ -271,7 +267,6 @@ const ReelItem: React.FC<ReelItemProps> = ({
 //     navigation.navigate("CreateReel");
 //   };
 
-
 //   return (
 //     <View style={styles.container}>
 //       <StatusBar hidden={false} translucent backgroundColor="transparent" />
@@ -309,7 +304,7 @@ const ReelItem: React.FC<ReelItemProps> = ({
 
 const ShowReels: React.FC = ({ navigation }: any) => {
   const dispatch = useAppDispatch();
-  const { reels, loading } = useAppSelector((state:any) => state.reel);
+  const { reels, loading } = useAppSelector((state: any) => state.reel);
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [muted, setMuted] = useState<boolean>(true);
@@ -317,7 +312,7 @@ const ShowReels: React.FC = ({ navigation }: any) => {
   useEffect(() => {
     dispatch(getAllReels());
   }, []);
-  console.log(reels)
+  console.log(reels);
 
   const viewabilityConfig = useRef({ viewAreaCoveragePercentThreshold: 80 });
 
@@ -345,7 +340,14 @@ const ShowReels: React.FC = ({ navigation }: any) => {
   // loading state
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#000" }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#000",
+        }}
+      >
         <ActivityIndicator size="large" color="#fff" />
       </View>
     );
@@ -360,6 +362,8 @@ const ShowReels: React.FC = ({ navigation }: any) => {
           id: r._id,
           uri: r.videoUrl,
           caption: r.caption,
+          user: r.postedBy,
+          product: r.reelProduct,
           liked: false,
         }))}
         keyExtractor={(item) => item.id}
@@ -390,7 +394,6 @@ const ShowReels: React.FC = ({ navigation }: any) => {
     </View>
   );
 };
-
 
 export default ShowReels;
 

@@ -6,9 +6,11 @@ import AddProduct from "@/components/Product/AddProduct";
 import EditProduct from "@/components/Product/EditProduct";
 import ProductDetails from "@/components/Product/ProductDetails";
 
+
 const Stack = createNativeStackNavigator<ProductStackParamList>();
 
 export default function ProductStack() {
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProductList" component={ShowProducts} />

@@ -8,7 +8,7 @@ import {
   Modal,
   FlatList,
   ListRenderItemInfo,
-  Alert
+  Alert,
 } from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 import * as ImagePicker from "expo-image-picker";
@@ -68,7 +68,7 @@ const CreatReel: React.FC<CreatReelProps> = ({ navigation }) => {
       dispatch(uploadReelVideo(videoFile as any));
     }
   };
-  console.log(reel)
+  console.log(reel);
   const handleCreate = () => {
     if (!reel.reelVideo) {
       alert("Please select and upload a video first!");
@@ -89,7 +89,7 @@ const CreatReel: React.FC<CreatReelProps> = ({ navigation }) => {
         postedBy: user._id, // replace with actual user ID if needed
       })
     );
-
+    Alert.alert("Reel Creation", "Your Reel has been creted successfully !");
     // reset local states after creation
     setTitle("");
     setDescription("");

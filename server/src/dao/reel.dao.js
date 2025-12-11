@@ -14,6 +14,8 @@ export const getReelByIdDAO = async (id) => {
 
 export const getAllReelsDAO = async (filter, skip, limit, sort) => {
   return await Reel.find(filter)
+    .populate("postedBy")
+    .populate("reelProduct")
     .sort(sort)
     .skip(skip)
     .limit(limit);

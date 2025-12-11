@@ -83,6 +83,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { getProducts } from "@/redux/slice/product.slice";
 import ProductCard from "./ProductCard";
 
+
 type Nav = NativeStackNavigationProp<ProductStackParamList, "ProductList">;
 
 export default function ShowProducts() {
