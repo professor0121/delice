@@ -8,6 +8,7 @@ import {
   Modal,
   FlatList,
   ListRenderItemInfo,
+  Alert
 } from "react-native";
 import { IconSymbol } from "../ui/icon-symbol";
 import * as ImagePicker from "expo-image-picker";
@@ -67,7 +68,7 @@ const CreatReel: React.FC<CreatReelProps> = ({ navigation }) => {
       dispatch(uploadReelVideo(videoFile as any));
     }
   };
-
+  console.log(reel)
   const handleCreate = () => {
     if (!reel.reelVideo) {
       alert("Please select and upload a video first!");
