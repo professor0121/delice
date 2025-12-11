@@ -1,30 +1,19 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation, NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { LogOut } from "@/components/LogOut";
-import { BusinessStackParamList } from "@/types/navigetion";
+import { useRouter } from "expo-router";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
-
-type Nav = NativeStackNavigationProp<BusinessStackParamList, "BusinessHome">;
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function BusinessHome() {
-  const navigation = useNavigation<Nav>();
+  const router = useRouter();
 
-  // Dashboard sections with navigation target, icon, and optional badge
-  const sections: {
-    id: string;
-    title: string;
-    description: string;
-    icon: JSX.Element;
-    screen: keyof BusinessStackParamList;
-    badge?: number;
-  }[] = [
+  const sections = [
     {
       id: "1",
       title: "My Products",
       description: "View and manage your products",
       icon: <FontAwesome5 name="box-open" size={24} color="#007AFF" />,
-      screen: "Products",
+      screen: "/(business)/products",
       badge: 5,
     },
     {
@@ -32,7 +21,7 @@ export default function BusinessHome() {
       title: "Orders",
       description: "Check recent orders and status",
       icon: <MaterialIcons name="shopping-cart" size={24} color="#28A745" />,
-      screen: "Orders",
+      screen: "/(business)/orders",
       badge: 2,
     },
     {
@@ -40,14 +29,14 @@ export default function BusinessHome() {
       title: "Analytics",
       description: "View sales & performance stats",
       icon: <MaterialIcons name="analytics" size={24} color="#FFC107" />,
-      screen: "Analytics",
+      screen: "/(business)/analytics",
     },
     {
       id: "4",
       title: "Messages",
       description: "Customer inquiries & chats",
       icon: <MaterialIcons name="message" size={24} color="#6F42C1" />,
-      screen: "Messages",
+      screen: "/(business)/messages",
       badge: 3,
     },
     {
@@ -55,18 +44,19 @@ export default function BusinessHome() {
       title: "Promotions",
       description: "Create discounts & offers",
       icon: <MaterialIcons name="local-offer" size={24} color="#E83E8C" />,
-      screen: "Promotions",
+      screen: "/(business)/promotions",
     },
     {
       id: "6",
       title: "Settings",
       description: "Manage business account settings",
       icon: <MaterialIcons name="settings" size={24} color="#343A40" />,
-      screen: "Settings",
+      screen: "/(business)/settings",
     },
   ];
 
   return (
+    <SafeAreaView style={styles.container}>
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
       <Text style={styles.header}>Business Dashboard</Text>
 
@@ -74,7 +64,7 @@ export default function BusinessHome() {
         <TouchableOpacity
           key={section.id}
           style={styles.sectionCard}
-          onPress={() => navigation.navigate(section.screen)}
+          onPress={() => router.push(section.screen as any)}
         >
           <View style={styles.cardHeader}>
             {section.icon}
@@ -90,11 +80,8 @@ export default function BusinessHome() {
           </View>
         </TouchableOpacity>
       ))}
-
-      <View style={{ marginTop: 20 }}>
-        {/* <LogOut /> */}
-      </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 

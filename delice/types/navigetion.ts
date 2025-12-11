@@ -10,3 +10,8 @@ export type ReelStackParamList={
   CreateReel:undefined;
   EditReel:{reelId:string};
 }
+
+export type UserProductStackParamList = {
+  ProductList: undefined;
+  ProductDetails: { product: any };
+}

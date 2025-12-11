@@ -90,8 +90,8 @@ export default function ShowProducts() {
   const navigation = useNavigation<Nav>();
   const dispatch = useAppDispatch();
 
-  const { products, listLoading } = useAppSelector((s) => s.product);
-  const user = useAppSelector((s) => s.auth.user);
+  const { products, listLoading } = useAppSelector((s: any) => s.product);
+  const user = useAppSelector((s: any) => s.auth.user) as any;
 
   useEffect(() => {
     if (user?._id) {

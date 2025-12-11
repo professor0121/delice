@@ -8,7 +8,7 @@ import { View, Text } from "react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const user = useAppSelector((state) => state.auth.user);
+  const user = useAppSelector((state: any) => state.auth.user) as any;
   const [isBusinessAccount, setIsBusinessAccount] = useState(false);
 
   useEffect(() => {
@@ -64,6 +64,15 @@ export default function TabLayout() {
         }}
       />
 
+      <Tabs.Screen
+        name="products"
+        options={{
+          title: "Products",
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={28} name="photo.on.rectangle" color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="profile"
         options={{

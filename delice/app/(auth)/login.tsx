@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { otpSent, loading, error, user } = useAppSelector((state) => state.auth);
+  const { otpSent, loading, error, user } = useAppSelector((state:any) => state.auth);
 
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -24,7 +24,7 @@ const LoginScreen: React.FC = () => {
 
   const handleVerifyOtp = () => {
     dispatch(verifyOtp({ email, otp }));
-     AsyncStorage.setItem('accountType',user?.accountType as string)
+     AsyncStorage.setItem('accountType',user?.accountType as string||"Personal")
   };
 
   // 👀 Watch for user update to redirect properly

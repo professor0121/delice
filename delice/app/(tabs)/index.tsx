@@ -1,35 +1,28 @@
-import {  StyleSheet, View, Text } from 'react-native';
+import React from 'react'
+import { View, StyleSheet } from 'react-native'
+import StoryArea from '../../components/StoryArea'
+import DummyPost from '../../components/DummyPost'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-export default function HomeScreen() {
-  const storedAccountType =  AsyncStorage.getItem("accountType");
+const Index = () => {
   return (
-    <SafeAreaView>
-      <View>
-        <Text>Home Screen hell {storedAccountType}</Text>
+    <SafeAreaView style={styles.container}>
+      {/* Story Row */}
+      <View style={styles.storyContainer}>
+        <StoryArea />
+      </View>
+
+      {/* Feed Posts */}
+      <View style={{ flex: 1 }}>
+        <DummyPost />
       </View>
     </SafeAreaView>
-  );
+  )
 }
 
+export default Index
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
+  container: { flex: 1, backgroundColor: '#fff' },
+  storyContainer: { height: 110, paddingVertical: 8 },
+})
